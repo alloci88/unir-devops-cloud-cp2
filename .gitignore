@@ -35,3 +35,12 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+
+# Ansible retry files
+*.retry
+
+# macOS
+.DS_Store
+
+# VS Code local settings
+.vscode/
