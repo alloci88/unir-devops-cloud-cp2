@@ -1,3 +1,14 @@
+/**
+ * vars.tf
+ * ------------
+ * Input vars for the CP2 infrastructure.
+ *
+ * Notes:
+ * - We use UPPERCASE variable names by convention in this repository.
+ * - Tags are centralized to ensure every resource includes:
+ *   environment = "casopractico2"
+ */
+
 variable "PROJECT_NAME" {
   description = "Project identifier used as a prefix for Azure resource names."
   type        = string
@@ -10,18 +21,26 @@ variable "LOCATION" {
   default     = "westeurope"
 }
 
+/**
+ * Environment tag required by the assignment rules.
+ * Keep this value as 'casopractico2' to comply with the rubric.
+ */
 variable "ENVIRONMENT" {
-  description = "Environment name for tagging (e.g., dev, test, prod)."
+  description = "Environment name for tagging."
   type        = string
-  default     = "dev"
+  default     = "casopractico2"
 }
 
+/**
+ * Common tags applied to all Azure resources created by Terraform.
+ * IMPORTANT: Must include environment = "casopractico2".
+ */
 variable "TAGS" {
   description = "Common tags applied to all resources."
   type        = map(string)
   default = {
     project     = "unir-cp2"
     managed_by  = "terraform"
-    environment = "dev"
+    environment = "casopractico2"
   }
 }
