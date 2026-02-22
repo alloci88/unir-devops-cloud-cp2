@@ -58,3 +58,33 @@ variable "TAGS" {
     environment = "casopractico2"
   }
 }
+
+/**
+ * Networking
+ * ----------
+ * Address space and subnet for the VM.
+ */
+
+variable "VNET_ADDRESS_SPACE" {
+  description = "VNet address space for the CP2 environment."
+  type        = list(string)
+  default     = ["10.10.0.0/16"]
+}
+
+variable "SUBNET_ADDRESS_PREFIX" {
+  description = "Subnet address prefix where the VM NIC will be placed."
+  type        = list(string)
+  default     = ["10.10.1.0/24"]
+}
+
+/**
+ * Security
+ * --------
+ * Source allowed for SSH. Use a CIDR like 'X.X.X.X/32'.
+ * Default is open for academic simplicity.
+ */
+variable "SSH_SOURCE_CIDR" {
+  description = "CIDR allowed to SSH into the VM (22/tcp)."
+  type        = string
+  default     = "0.0.0.0/0"
+}
