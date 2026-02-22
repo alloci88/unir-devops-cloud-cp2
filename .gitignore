@@ -44,3 +44,17 @@ terraform.rc
 
 # VS Code local settings
 .vscode/
+
+# Terraform
+terraform/.terraform/
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
+terraform/tfplan
+terraform/*.tfplan
+*.tfplan
+
+# macOS
+.DS_Store
+
+# Keys
+*.pem

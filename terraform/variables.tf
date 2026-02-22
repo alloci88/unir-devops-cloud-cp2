@@ -20,7 +20,7 @@
 variable "ACR_NAME" {
   description = "Globally unique Azure Container Registry name (alphanumeric only)."
   type        = string
-  default     = "unircp2acr88"
+  default     = "unircp2acr88fc01"
 }
 
 variable "PROJECT_NAME" {
@@ -30,9 +30,9 @@ variable "PROJECT_NAME" {
 }
 
 variable "LOCATION" {
-  description = "Azure region where resources will be deployed."
+  description = "Azure region for the Resource Group metadata."
   type        = string
-  default     = "germanywestcentral"
+  default     = "francecentral"
 }
 
 /**
@@ -87,4 +87,28 @@ variable "SSH_SOURCE_CIDR" {
   description = "CIDR allowed to SSH into the VM (22/tcp)."
   type        = string
   default     = "0.0.0.0/0"
+}
+
+/**
+ * VM
+ * --
+ * Linux VM settings for CP2.
+ */
+
+variable "VM_ADMIN_USERNAME" {
+  description = "Admin username for the Linux VM."
+  type        = string
+  default     = "alloci"
+}
+
+variable "VM_SIZE" {
+  description = "Azure VM size for the Linux VM."
+  type        = string
+  default     = "Standard_D2s_v3"
+}
+
+variable "VM_OS_DISK_SIZE_GB" {
+  description = "OS disk size in GB."
+  type        = number
+  default     = 30
 }

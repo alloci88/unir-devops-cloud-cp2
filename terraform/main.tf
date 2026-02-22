@@ -25,6 +25,15 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "~> 4.0"
     }
+
+    /**
+     * TLS provider.
+     * Required for generating the SSH key pair via tls_private_key.
+     */
+    tls = {
+      source  = "hashicorp/tls"
+      version = "~> 4.0"
+    }
   }
 }
 
