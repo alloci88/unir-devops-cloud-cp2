@@ -1,5 +1,5 @@
 /**
- * vars.tf
+ * variables.tf
  * ------------
  * Input vars for the CP2 infrastructure.
  *

@@ -35,3 +35,21 @@ terraform {
 provider "azurerm" {
   features {}
 }
+
+/**
+ * Resource group for CP2.
+ */
+resource "azurerm_resource_group" "RG_CP2" {
+  /**
+   * Resource Group name.
+   * All other Azure resources will be created inside this RG.
+   */
+  name     = "${var.PROJECT_NAME}-rg"
+  location = var.LOCATION
+
+  /**
+   * Mandatory tags (assignment requirement).
+   * environment must be "casopractico2".
+   */
+  tags = var.TAGS
+}
