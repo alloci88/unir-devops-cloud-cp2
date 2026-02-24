@@ -70,3 +70,13 @@ output "ssh_private_key_pem" {
   sensitive   = true
 }
 
+/**
+ * AKS kubeconfig (raw).
+ * Required output to allow Ansible (kubernetes.core.k8s) to operate without manual steps.
+ */
+output "kube_config_raw" {
+  description = "Raw kubeconfig to access AKS."
+  value       = azurerm_kubernetes_cluster.CP2_AKS.kube_config_raw
+  sensitive   = true
+}
+

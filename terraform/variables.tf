@@ -112,3 +112,33 @@ variable "VM_OS_DISK_SIZE_GB" {
   type        = number
   default     = 30
 }
+
+/**
+ * AKS
+ * ---
+ * Minimal AKS cluster settings for CP2.
+ */
+
+variable "AKS_CLUSTER_NAME" {
+  description = "AKS cluster name."
+  type        = string
+  default     = "unir-cp2-aks"
+}
+
+variable "AKS_DNS_PREFIX" {
+  description = "DNS prefix for AKS."
+  type        = string
+  default     = "unircp2aks"
+}
+
+variable "AKS_NODE_COUNT" {
+  description = "Number of worker nodes."
+  type        = number
+  default     = 1
+}
+
+variable "AKS_NODE_VM_SIZE" {
+  description = "VM size for AKS worker nodes."
+  type        = string
+  default     = "Standard_D2s_v3"
+}
