@@ -1,0 +1,6 @@
+---
+- name: CP2 - Build & Push images to ACR (local)
+  hosts: local
+  gather_facts: false
+  roles:
+    - acr

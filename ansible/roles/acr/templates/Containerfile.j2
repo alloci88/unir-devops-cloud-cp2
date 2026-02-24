@@ -1,0 +1,17 @@
+FROM nginx:alpine
+
+RUN apk add --no-cache openssl apache2-utils
+
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY html/ /usr/share/nginx/html/
+
+RUN mkdir -p /etc/nginx/ssl /etc/nginx/auth && \
+    openssl req -x509 -nodes -newkey rsa:2048 \
+    -keyout /etc/nginx/ssl/server.key \
+    -out /etc/nginx/ssl/server.crt \
+    -days 365 \
+    -subj "{{ WEB_TLS_SUBJECT }}" && \
+    htpasswd -bc /etc/nginx/auth/htpasswd "{{ WEB_BASIC_AUTH_USER }}" "{{ WEB_BASIC_AUTH_PASS }}"
+
+EXPOSE 443
+CMD ["nginx", "-g", "daemon off;"]
