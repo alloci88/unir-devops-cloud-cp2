@@ -51,9 +51,27 @@
     path: "{{ WEB_BUILD_CONTEXT_DIR }}"
     state: build
     force: true
+    arch: amd64
 
 - name: Push webserver image to ACR (Podman)
   containers.podman.podman_image:
     name: "{{ WEB_IMAGE_FULL }}"
+    push: true
+    state: present
+
+- name: Pull Redis upstream image (Docker Hub)
+  containers.podman.podman_image:
+    name: "{{ REDIS_UPSTREAM_IMAGE }}"
+    state: present
+
+- name: Tag Redis image for ACR
+  containers.podman.podman_tag:
+    image: "{{ REDIS_UPSTREAM_IMAGE }}"
+    target_names:
+      - "{{ REDIS_IMAGE_FULL }}"
+
+- name: Push Redis image to ACR
+  containers.podman.podman_image:
+    name: "{{ REDIS_IMAGE_FULL }}"
     push: true
     state: present

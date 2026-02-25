@@ -4,3 +4,10 @@
   gather_facts: false
   roles:
     - acr
+
+- name: CP2 - Deploy webserver on VM (Podman + systemd)
+  hosts: vm
+  become: true
+  gather_facts: true
+  roles:
+    - vm

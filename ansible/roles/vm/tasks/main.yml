@@ -1,0 +1,63 @@
+---
+- name: Validate required ACR environment variables are present
+  ansible.builtin.assert:
+    that:
+      - ACR_LOGIN_SERVER | length > 0
+      - ACR_USERNAME | length > 0
+      - ACR_PASSWORD | length > 0
+
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Install Podman and dependencies
+  ansible.builtin.apt:
+    name:
+      - podman
+      - uidmap
+      - slirp4netns
+      - fuse-overlayfs
+      - containernetworking-plugins
+    state: present
+
+- name: Login to ACR (Podman)
+  containers.podman.podman_login:
+    registry: "{{ ACR_LOGIN_SERVER }}"
+    username: "{{ ACR_USERNAME }}"
+    password: "{{ ACR_PASSWORD }}"
+
+- name: Pull webserver image from ACR
+  containers.podman.podman_image:
+    name: "{{ WEB_IMAGE_FULL }}"
+    state: present
+
+- name: Ensure webserver container is running
+  containers.podman.podman_container:
+    name: "{{ WEB_CONTAINER_NAME }}"
+    image: "{{ WEB_IMAGE_FULL }}"
+    state: started
+    recreate: true
+    restart_policy: "no"
+    ports:
+      - "{{ WEB_HOST_PORT }}:{{ WEB_CONTAINER_PORT }}"
+    publish_all: false
+
+- name: Generate systemd unit for webserver container
+  containers.podman.podman_generate_systemd:
+    name: "{{ WEB_CONTAINER_NAME }}"
+    dest: "{{ WEB_SYSTEMD_UNIT_DIR }}"
+    container_prefix: "container"
+    separator: "-"
+    restart_policy: "always"
+    new: true
+
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Enable and start webserver systemd service
+  ansible.builtin.systemd:
+    name: "{{ WEB_SYSTEMD_UNIT_NAME }}"
+    enabled: true
+    state: started

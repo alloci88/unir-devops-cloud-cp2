@@ -1,0 +1,15 @@
+---
+ACR_LOGIN_SERVER: "{{ lookup('env', 'CP2_ACR_LOGIN_SERVER') }}"
+ACR_USERNAME: "{{ lookup('env', 'CP2_ACR_USERNAME') }}"
+ACR_PASSWORD: "{{ lookup('env', 'CP2_ACR_PASSWORD') }}"
+
+WEB_IMAGE_NAME: "webserver"
+WEB_IMAGE_TAG: "casopractico2"
+WEB_IMAGE_FULL: "{{ ACR_LOGIN_SERVER }}/{{ WEB_IMAGE_NAME }}:{{ WEB_IMAGE_TAG }}"
+
+WEB_CONTAINER_NAME: "cp2-webserver"
+WEB_HOST_PORT: 443
+WEB_CONTAINER_PORT: 443
+
+WEB_SYSTEMD_UNIT_DIR: "/etc/systemd/system"
+WEB_SYSTEMD_UNIT_NAME: "container-cp2-webserver.service"

@@ -15,3 +15,9 @@ WEB_BASIC_AUTH_PASS: "cp2pass"
 
 # Subject del certificado autofirmado
 WEB_TLS_SUBJECT: "/C=ES/ST=Madrid/L=Madrid/O=UNIR/OU=DevOps/CN=cp2-webserver"
+
+REDIS_IMAGE_NAME: "redis"
+REDIS_IMAGE_TAG: "casopractico2"
+REDIS_IMAGE_FULL: "{{ ACR_LOGIN_SERVER }}/{{ REDIS_IMAGE_NAME }}:{{ REDIS_IMAGE_TAG }}"
+
+REDIS_UPSTREAM_IMAGE: "docker.io/library/redis:alpine"
