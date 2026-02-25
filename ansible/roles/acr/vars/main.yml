@@ -3,19 +3,6 @@ ACR_LOGIN_SERVER: "{{ lookup('env', 'CP2_ACR_LOGIN_SERVER') }}"
 ACR_USERNAME: "{{ lookup('env', 'CP2_ACR_USERNAME') }}"
 ACR_PASSWORD: "{{ lookup('env', 'CP2_ACR_PASSWORD') }}"
 
-WEB_IMAGE_NAME: "webserver"
-WEB_IMAGE_TAG: "casopractico2"
-WEB_IMAGE_FULL: "{{ ACR_LOGIN_SERVER }}/{{ WEB_IMAGE_NAME }}:{{ WEB_IMAGE_TAG }}"
-
-WEB_BUILD_CONTEXT_DIR: "{{ role_path }}/files/webserver"
-
-# Credenciales dentro del contenedor
-WEB_BASIC_AUTH_USER: "cp2user"
-WEB_BASIC_AUTH_PASS: "cp2pass"
-
-# Subject del certificado autofirmado
-WEB_TLS_SUBJECT: "/C=ES/ST=Madrid/L=Madrid/O=UNIR/OU=DevOps/CN=cp2-webserver"
-
 REDIS_IMAGE_NAME: "redis"
 REDIS_IMAGE_TAG: "casopractico2"
 REDIS_IMAGE_FULL: "{{ ACR_LOGIN_SERVER }}/{{ REDIS_IMAGE_NAME }}:{{ REDIS_IMAGE_TAG }}"

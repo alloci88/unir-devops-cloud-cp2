@@ -1,4 +1,4 @@
-FROM nginx:alpine
+FROM docker.io/library/nginx:alpine
 
 RUN apk add --no-cache openssl apache2-utils
 
@@ -10,8 +10,8 @@ RUN mkdir -p /etc/nginx/ssl /etc/nginx/auth && \
     -keyout /etc/nginx/ssl/server.key \
     -out /etc/nginx/ssl/server.crt \
     -days 365 \
-    -subj "{{ WEB_TLS_SUBJECT }}" && \
-    htpasswd -bc /etc/nginx/auth/htpasswd "{{ WEB_BASIC_AUTH_USER }}" "{{ WEB_BASIC_AUTH_PASS }}"
+    -subj "/C=ES/ST=Madrid/L=Madrid/O=UNIR/OU=DevOps/CN=cp2-webserver" && \
+    htpasswd -bc /etc/nginx/auth/htpasswd "cp2user" "cp2pass"
 
 EXPOSE 443
 CMD ["nginx", "-g", "daemon off;"]

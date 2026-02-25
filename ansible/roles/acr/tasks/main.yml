@@ -12,52 +12,11 @@
       Missing ACR env vars. Export:
       CP2_ACR_LOGIN_SERVER, CP2_ACR_USERNAME, CP2_ACR_PASSWORD
 
-- name: Ensure webserver build context directories exist
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: directory
-    mode: "0755"
-  loop:
-    - "{{ WEB_BUILD_CONTEXT_DIR }}"
-    - "{{ WEB_BUILD_CONTEXT_DIR }}/html"
-
-- name: Render webserver Containerfile
-  ansible.builtin.template:
-    src: "Containerfile.j2"
-    dest: "{{ WEB_BUILD_CONTEXT_DIR }}/Containerfile"
-    mode: "0644"
-
-- name: Render nginx.conf
-  ansible.builtin.template:
-    src: "nginx.conf.j2"
-    dest: "{{ WEB_BUILD_CONTEXT_DIR }}/nginx.conf"
-    mode: "0644"
-
-- name: Copy web content index.html
-  ansible.builtin.copy:
-    src: "webserver/html/index.html"
-    dest: "{{ WEB_BUILD_CONTEXT_DIR }}/html/index.html"
-    mode: "0644"
-
 - name: Login to ACR (Podman)
   containers.podman.podman_login:
     registry: "{{ ACR_LOGIN_SERVER }}"
     username: "{{ ACR_USERNAME }}"
     password: "{{ ACR_PASSWORD }}"
-
-- name: Build webserver image (Podman)
-  containers.podman.podman_image:
-    name: "{{ WEB_IMAGE_FULL }}"
-    path: "{{ WEB_BUILD_CONTEXT_DIR }}"
-    state: build
-    force: true
-    arch: amd64
-
-- name: Push webserver image to ACR (Podman)
-  containers.podman.podman_image:
-    name: "{{ WEB_IMAGE_FULL }}"
-    push: true
-    state: present
 
 - name: Pull Redis upstream image (Docker Hub)
   containers.podman.podman_image:

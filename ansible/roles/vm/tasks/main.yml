@@ -27,6 +27,63 @@
     username: "{{ ACR_USERNAME }}"
     password: "{{ ACR_PASSWORD }}"
 
+# -----------------------------
+# BUILD IMAGE DIRECTLY ON VM (amd64)
+# -----------------------------
+
+- name: Create build directory
+  ansible.builtin.file:
+    path: /opt/cp2/webserver
+    state: directory
+    mode: "0755"
+
+- name: Create html directory
+  ansible.builtin.file:
+    path: /opt/cp2/webserver/html
+    state: directory
+    mode: "0755"
+
+- name: Copy Containerfile to VM
+  ansible.builtin.copy:
+    src: "webserver/Containerfile"
+    dest: /opt/cp2/webserver/Containerfile
+    mode: "0644"
+
+- name: Copy nginx.conf to VM
+  ansible.builtin.copy:
+    src: "webserver/nginx.conf"
+    dest: /opt/cp2/webserver/nginx.conf
+    mode: "0644"
+
+- name: Copy index.html to VM
+  ansible.builtin.copy:
+    src: "webserver/html/index.html"
+    dest: /opt/cp2/webserver/html/index.html
+    mode: "0644"
+
+- name: Build webserver image locally on VM (native amd64)
+  containers.podman.podman_image:
+    name: "webserver:casopractico2"
+    path: /opt/cp2/webserver
+    state: build
+    force: true
+
+- name: Tag webserver image for ACR
+  containers.podman.podman_tag:
+    image: "webserver:casopractico2"
+    target_names:
+      - "{{ WEB_IMAGE_FULL }}"
+
+- name: Push webserver image to ACR
+  containers.podman.podman_image:
+    name: "{{ WEB_IMAGE_FULL }}"
+    push: true
+    state: present
+
+# -----------------------------
+# DEPLOY CONTAINER FROM ACR
+# -----------------------------
+
 - name: Pull webserver image from ACR
   containers.podman.podman_image:
     name: "{{ WEB_IMAGE_FULL }}"
@@ -41,7 +98,6 @@
     restart_policy: "no"
     ports:
       - "{{ WEB_HOST_PORT }}:{{ WEB_CONTAINER_PORT }}"
-    publish_all: false
 
 - name: Generate systemd unit for webserver container
   containers.podman.podman_generate_systemd:
