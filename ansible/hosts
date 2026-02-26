@@ -1,5 +1,0 @@
-[local]
-localhost ansible_connection=local
-
-[vm]
-cp2-vm ansible_host=20.199.126.75 ansible_user=alloci ansible_ssh_private_key_file=../terraform/cp2_ssh_key.pem
