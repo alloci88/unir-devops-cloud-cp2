@@ -21,3 +21,8 @@ VOTING_REPO_URL: "https://github.com/Azure-Samples/azure-voting-app-redis.git"
 VOTING_REPO_DIR: "/opt/cp2/azure-voting-app-redis"
 VOTING_BUILD_CONTEXT_DIR: "{{ VOTING_REPO_DIR }}/azure-vote"
 VOTING_BASE_IMAGE: "docker.io/tiangolo/uwsgi-nginx-flask:python3.6-2022-11-25"
+
+REDIS_IMAGE_NAME: "redis"
+REDIS_IMAGE_TAG: "casopractico2"
+REDIS_IMAGE_FULL: "{{ ACR_LOGIN_SERVER }}/{{ REDIS_IMAGE_NAME }}:{{ REDIS_IMAGE_TAG }}"
+REDIS_UPSTREAM_IMAGE: "docker.io/library/redis:alpine"

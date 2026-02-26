@@ -1,0 +1,192 @@
+---
+# -------------------------
+# NAMESPACE
+# -------------------------
+
+- name: Create namespace for CP2 voting app
+  kubernetes.core.k8s:
+    kubeconfig: "{{ KUBECONFIG_PATH }}"
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: "{{ AKS_NAMESPACE }}"
+
+# -------------------------
+# ACR SECRET
+# -------------------------
+
+- name: Create docker-registry secret for ACR
+  kubernetes.core.k8s:
+    kubeconfig: "{{ KUBECONFIG_PATH }}"
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: "{{ ACR_PULL_SECRET_NAME }}"
+        namespace: "{{ AKS_NAMESPACE }}"
+      type: kubernetes.io/dockerconfigjson
+      data:
+        .dockerconfigjson: >-
+          {{ {
+              "auths": {
+                (ACR_LOGIN_SERVER): {
+                  "username": ACR_USERNAME,
+                  "password": ACR_PASSWORD,
+                  "auth": (ACR_USERNAME ~ ":" ~ ACR_PASSWORD) | b64encode
+                }
+              }
+            } | to_json | b64encode }}
+
+# -------------------------
+# PVC FOR REDIS
+# -------------------------
+
+- name: Create PersistentVolumeClaim for Redis
+  kubernetes.core.k8s:
+    kubeconfig: "{{ KUBECONFIG_PATH }}"
+    state: present
+    definition:
+      apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: redis-pvc
+        namespace: "{{ AKS_NAMESPACE }}"
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+
+# -------------------------
+# REDIS DEPLOYMENT
+# -------------------------
+
+- name: Deploy Redis with PVC
+  kubernetes.core.k8s:
+    kubeconfig: "{{ KUBECONFIG_PATH }}"
+    state: present
+    definition:
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: redis
+        namespace: "{{ AKS_NAMESPACE }}"
+      spec:
+        replicas: 1
+        selector:
+          matchLabels:
+            app: redis
+        template:
+          metadata:
+            labels:
+              app: redis
+          spec:
+            imagePullSecrets:
+              - name: "{{ ACR_PULL_SECRET_NAME }}"
+            securityContext:
+              fsGroup: 1000
+            containers:
+              - name: redis
+                image: "{{ ACR_LOGIN_SERVER }}/redis:casopractico2"
+                imagePullPolicy: Always
+                ports:
+                  - containerPort: 6379
+                args:
+                  - "--appendonly"
+                  - "yes"
+                  - "--dir"
+                  - "/data"
+                securityContext:
+                  runAsUser: 1000
+                  runAsGroup: 1000
+                volumeMounts:
+                  - mountPath: /data
+                    name: redis-storage
+            volumes:
+              - name: redis-storage
+                persistentVolumeClaim:
+                  claimName: redis-pvc
+
+# -------------------------
+# REDIS SERVICE
+# -------------------------
+
+- name: Create Redis ClusterIP service
+  kubernetes.core.k8s:
+    kubeconfig: "{{ KUBECONFIG_PATH }}"
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: redis
+        namespace: "{{ AKS_NAMESPACE }}"
+      spec:
+        selector:
+          app: redis
+        ports:
+          - port: 6379
+            targetPort: 6379
+        type: ClusterIP
+
+# -------------------------
+# FRONTEND DEPLOYMENT
+# -------------------------
+
+- name: Deploy Voting Frontend
+  kubernetes.core.k8s:
+    kubeconfig: "{{ KUBECONFIG_PATH }}"
+    state: present
+    definition:
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: voting-frontend
+        namespace: "{{ AKS_NAMESPACE }}"
+      spec:
+        replicas: 1
+        selector:
+          matchLabels:
+            app: voting-frontend
+        template:
+          metadata:
+            labels:
+              app: voting-frontend
+          spec:
+            imagePullSecrets:
+              - name: "{{ ACR_PULL_SECRET_NAME }}"
+            containers:
+              - name: voting-frontend
+                image: "{{ ACR_LOGIN_SERVER }}/voting-frontend:casopractico2"
+                imagePullPolicy: Always
+                ports:
+                  - containerPort: 80
+                env:
+                  - name: REDIS
+                    value: "redis"
+
+# -------------------------
+# FRONTEND LOADBALANCER
+# -------------------------
+
+- name: Create LoadBalancer service for Voting Frontend
+  kubernetes.core.k8s:
+    kubeconfig: "{{ KUBECONFIG_PATH }}"
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: voting-frontend
+        namespace: "{{ AKS_NAMESPACE }}"
+      spec:
+        selector:
+          app: voting-frontend
+        ports:
+          - port: 80
+            targetPort: 80
+        type: LoadBalancer

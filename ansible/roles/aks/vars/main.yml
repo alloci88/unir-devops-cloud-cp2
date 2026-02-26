@@ -1,0 +1,9 @@
+---
+KUBECONFIG_PATH: "{{ playbook_dir }}/../terraform/kubeconfig_cp2.yaml"
+AKS_NAMESPACE: "cp2-voting"
+
+ACR_LOGIN_SERVER: "{{ lookup('env', 'CP2_ACR_LOGIN_SERVER') }}"
+ACR_USERNAME: "{{ lookup('env', 'CP2_ACR_USERNAME') }}"
+ACR_PASSWORD: "{{ lookup('env', 'CP2_ACR_PASSWORD') }}"
+
+ACR_PULL_SECRET_NAME: "acr-pull-secret"

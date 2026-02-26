@@ -17,20 +17,3 @@
     registry: "{{ ACR_LOGIN_SERVER }}"
     username: "{{ ACR_USERNAME }}"
     password: "{{ ACR_PASSWORD }}"
-
-- name: Pull Redis upstream image (Docker Hub)
-  containers.podman.podman_image:
-    name: "{{ REDIS_UPSTREAM_IMAGE }}"
-    state: present
-
-- name: Tag Redis image for ACR
-  containers.podman.podman_tag:
-    image: "{{ REDIS_UPSTREAM_IMAGE }}"
-    target_names:
-      - "{{ REDIS_IMAGE_FULL }}"
-
-- name: Push Redis image to ACR
-  containers.podman.podman_image:
-    name: "{{ REDIS_IMAGE_FULL }}"
-    push: true
-    state: present

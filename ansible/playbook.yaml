@@ -11,3 +11,9 @@
   gather_facts: true
   roles:
     - vm
+
+- name: CP2 - Deploy Voting App on AKS
+  hosts: local
+  gather_facts: false
+  roles:
+    - aks
