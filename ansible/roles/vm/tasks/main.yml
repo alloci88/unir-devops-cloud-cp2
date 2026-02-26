@@ -28,6 +28,47 @@
     password: "{{ ACR_PASSWORD }}"
 
 # -----------------------------
+# VOTING-FRONTEND IMAGE CONFIGURATION
+# -----------------------------
+- name: Ensure git is installed (for voting app source)
+  ansible.builtin.apt:
+    name: git
+    state: present
+    update_cache: false
+
+- name: Clone Azure Voting App repo (azure-voting-app-redis)
+  ansible.builtin.git:
+    repo: "{{ VOTING_REPO_URL }}"
+    dest: "{{ VOTING_REPO_DIR }}"
+    version: "master"
+    force: true
+
+- name: Ensure Dockerfile uses fully qualified base image (Podman short-name policy)
+  ansible.builtin.replace:
+    path: "{{ VOTING_BUILD_CONTEXT_DIR }}/Dockerfile"
+    regexp: '^FROM\s+tiangolo/uwsgi-nginx-flask:python3\.6\s*$'
+    replace: "FROM {{ VOTING_BASE_IMAGE }}"
+
+- name: Build voting frontend image locally on VM (native amd64)
+  containers.podman.podman_image:
+    name: "voting-frontend:casopractico2"
+    path: "{{ VOTING_BUILD_CONTEXT_DIR }}"
+    state: build
+    force: true
+
+- name: Tag voting frontend image for ACR
+  containers.podman.podman_tag:
+    image: "voting-frontend:casopractico2"
+    target_names:
+      - "{{ VOTING_IMAGE_FULL }}"
+
+- name: Push voting frontend image to ACR
+  containers.podman.podman_image:
+    name: "{{ VOTING_IMAGE_FULL }}"
+    push: true
+    state: present
+
+# -----------------------------
 # BUILD IMAGE DIRECTLY ON VM (amd64)
 # -----------------------------
 

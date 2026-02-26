@@ -13,3 +13,11 @@ WEB_CONTAINER_PORT: 443
 
 WEB_SYSTEMD_UNIT_DIR: "/etc/systemd/system"
 WEB_SYSTEMD_UNIT_NAME: "container-cp2-webserver.service"
+
+VOTING_IMAGE_NAME: "voting-frontend"
+VOTING_IMAGE_TAG: "casopractico2"
+VOTING_IMAGE_FULL: "{{ ACR_LOGIN_SERVER }}/{{ VOTING_IMAGE_NAME }}:{{ VOTING_IMAGE_TAG }}"
+VOTING_REPO_URL: "https://github.com/Azure-Samples/azure-voting-app-redis.git"
+VOTING_REPO_DIR: "/opt/cp2/azure-voting-app-redis"
+VOTING_BUILD_CONTEXT_DIR: "{{ VOTING_REPO_DIR }}/azure-vote"
+VOTING_BASE_IMAGE: "docker.io/tiangolo/uwsgi-nginx-flask:python3.6-2022-11-25"
